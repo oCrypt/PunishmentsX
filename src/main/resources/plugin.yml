@@ -1,0 +1,36 @@
+name: PunishmentsX
+version: '${project.version}'
+main: com.cahrypt.me.punishmentsx.PunishmentsX
+api-version: 1.19
+authors: [ cahrypt ]
+description: Punishment plugin
+commands:
+  ban:
+    usage: /ban <player> <reason>
+
+  mute:
+    usage: /mute <player> <reason>
+
+  blacklist:
+    usage: /blacklist <player> <reason>
+
+  kick:
+    usage: /kick <player> <reason>
+
+  tempban:
+    usage: /ban <player> <time> <reason>
+
+  tempmute:
+    usage: /mute <player> <time> <reason>
+
+  info:
+    usage: /info <player>
+
+  unmute:
+    usage: /unmute <player> <reason>
+
+  unban:
+    usage: /unban <player> <usage>
+
+  unblacklist:
+    usage: /unblacklist <player> <reason>
