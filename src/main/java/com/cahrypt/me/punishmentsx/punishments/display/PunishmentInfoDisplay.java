@@ -31,9 +31,10 @@ import java.util.UUID;
 
 public class PunishmentInfoDisplay {
     private static final int PUNISHMENT_GUI_ROWS = 5;
-    private static final int INFO_GUI_ROWS = 3;
     private static final GuiItem PUNISHMENT_GUI_FILLER = new DisplayGuiItem(ColorableMaterials.STAINED_GLASS_PANE.withColor(MaterialColors.RED));
-    private static final GuiItem INFO_GUI_FILLER = new DisplayGuiItem(ColorableMaterials.STAINED_GLASS_PANE.withColor(MaterialColors.RED));
+
+    private final int INFO_GUI_ROWS = 3;
+    private final GuiItem INFO_GUI_FILLER = new DisplayGuiItem(ColorableMaterials.STAINED_GLASS_PANE.withColor(MaterialColors.RED));
 
     private final PunishmentsX main;
     private final PlayerManager playerManager;
