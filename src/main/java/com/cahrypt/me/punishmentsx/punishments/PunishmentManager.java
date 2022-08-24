@@ -2,7 +2,6 @@ package com.cahrypt.me.punishmentsx.punishments;
 
 import com.cahrypt.me.punishmentsx.PunishmentsX;
 import com.cahrypt.me.punishmentsx.player.PlayerManager;
-import com.cahrypt.me.punishmentsx.player.StorablePlayerInfo;
 import com.cahrypt.me.punishmentsx.punishments.handler.perm.BanHandler;
 import com.cahrypt.me.punishmentsx.punishments.handler.perm.MuteHandler;
 import com.cahrypt.me.punishmentsx.punishments.handler.temp.TempBanHandler;
@@ -14,6 +13,7 @@ import com.cahrypt.me.punishmentsx.util.Utils;
 import dev.fumaz.commons.bukkit.misc.Scheduler;
 import dev.fumaz.commons.bukkit.storage.sql.HikariDatabase;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -26,9 +26,12 @@ import java.util.function.Consumer;
 import java.util.logging.Logger;
 
 public class PunishmentManager {
+    private static final HikariDatabase HIKARI_DATABASE = DataSource.getHikariDatabase();
+    private static final PlayerManager PLAYER_MANAGER = JavaPlugin.getPlugin(PunishmentsX.class).getPlayerManager();
+    private static final Scheduler SCHEDULER = Scheduler.of(PunishmentsX.class);
+
     private final Logger logger;
     private final Map<PunishmentStorage, ActivePunishmentListener> punishmentListenerMap;
-    private static final Scheduler scheduler = Scheduler.of(PunishmentsX.class);
 
     public PunishmentManager() {
         this.logger = Bukkit.getLogger();
@@ -88,52 +91,30 @@ public class PunishmentManager {
 
         MUTE_STORAGE(
                 "mutelogs",
+                PlayerManager.SpecificPlayerInfo.UNIQUE_IDENTIFICATION,
                 new TempMuteHandler(), new MuteHandler()
-        ) {
-
-            @Override
-            public String getStorableTarget(StorablePlayerInfo targetInfo) {
-                return targetInfo.getUUID();
-            }
-        },
+        ),
 
         KICK_STORAGE(
                 "kicklogs",
+                PlayerManager.SpecificPlayerInfo.UNIQUE_IDENTIFICATION,
                 new KickHandler()
-        ) {
-
-            @Override
-            public String getStorableTarget(StorablePlayerInfo targetInfo) {
-                return targetInfo.getUUID();
-            }
-        },
+        ),
 
         BAN_STORAGE(
                 "banlogs",
+                PlayerManager.SpecificPlayerInfo.UNIQUE_IDENTIFICATION,
                 new TempBanHandler(), new BanHandler()
-        ) {
-
-            @Override
-            public String getStorableTarget(StorablePlayerInfo targetInfo) {
-                return targetInfo.getUUID();
-            }
-        },
+        ),
 
         BLACKLIST_STORAGE(
                 "blacklistlogs",
+                PlayerManager.SpecificPlayerInfo.IPV4_ADDRESS,
                 new BlacklistHandler()
-        ) {
-
-            @Override
-            public String getStorableTarget(StorablePlayerInfo targetInfo) {
-                return targetInfo.getAddress();
-            }
-        };
-
-        private final PlayerManager playerManager;
-        private final HikariDatabase database;
+        );
 
         private final PunishmentSQLStatements storageStatements;
+        private final PlayerManager.SpecificPlayerInfo specificPlayerInfo;
         private final Set<PunishmentHandler> handlerSet;
 
         /**
@@ -141,15 +122,17 @@ public class PunishmentManager {
          * @param tableName the name of the SQL table
          * @param handlers the punishment handlers sharing the storage
          */
-        PunishmentStorage(@NotNull String tableName, @NotNull PunishmentHandler... handlers) {
-            this.playerManager = JavaPlugin.getPlugin(PunishmentsX.class).getPlayerManager();
-            this.database = DataSource.getHikariDatabase();
-
+        PunishmentStorage(@NotNull String tableName, @NotNull PlayerManager.SpecificPlayerInfo specificPlayerInfo, @NotNull PunishmentHandler... handlers) {
             this.storageStatements = new PunishmentSQLStatements(tableName);
+            this.specificPlayerInfo = specificPlayerInfo;
             this.handlerSet = Set.of(handlers);
 
             handlerSet.forEach(handler -> handler.registerStorage(this));
-            database.executeQueryASync(storageStatements.getPunishmentTableQuery());
+            HIKARI_DATABASE.executeQueryASync(storageStatements.getPunishmentTableQuery(specificPlayerInfo.getSize()));
+        }
+
+        public PlayerManager.SpecificPlayerInfo getStorableTargetType() {
+            return specificPlayerInfo;
         }
 
         /**
@@ -162,13 +145,6 @@ public class PunishmentManager {
         }
 
         /**
-         * Use the specified {@link StorablePlayerInfo} to convert the target into the appropriate SQL-storable string
-         * @param targetInfo the {@link StorablePlayerInfo}
-         * @return the SQL-storable string
-         */
-        public abstract String getStorableTarget(StorablePlayerInfo targetInfo);
-
-        /**
          * Get the list of punishment handlers that share the specified storage
          * @return list of sharing punishment handlers
          */
@@ -177,14 +153,14 @@ public class PunishmentManager {
         }
 
         /**
-         * Consumes the target's active punishments, given their {@link StorablePlayerInfo}
-         * @param playerInfo the player's {@link StorablePlayerInfo}
+         * Consumes the target's active punishments, given their appropriate storable form
+         * @param storableTarget the target's appropriate storable form
          * @param punishmentConsumer the consumer for the active punishments
          */
-        public void consumeActivePunishmentInfo(StorablePlayerInfo playerInfo, Consumer<PunishmentInfo> punishmentConsumer) {
-            database.executeResultQuery(storageStatements.getActivePunishmentsQuery(),
+        public void consumeActivePunishmentInfoExplicitly(String storableTarget, Consumer<PunishmentInfo> punishmentConsumer) {
+            HIKARI_DATABASE.executeResultQuery(storageStatements.getActivePunishmentsQuery(),
                     preparedStatement -> {
-                        preparedStatement.setString(1, getStorableTarget(playerInfo));
+                        preparedStatement.setString(1, storableTarget);
                         preparedStatement.setTimestamp(2, new Timestamp(Utils.getCurrentTimeMillis()));
                     }, resultSet -> {
                         if (resultSet.next()) {
@@ -195,31 +171,31 @@ public class PunishmentManager {
 
         /**
          * Consumes the target's active punishments, given their name
-         * @param name the player's name
+         * @param playerName the player's name
          * @param punishmentConsumer the consumer for the active punishments
          */
-        public void consumeActivePunishmentInfo(String name, Consumer<PunishmentInfo> punishmentConsumer) {
-            playerManager.usePlayerInfoOrElse(name, info -> consumeActivePunishmentInfo(info, punishmentConsumer), str -> {});
+        public void consumeActivePunishmentInfo(String playerName, Consumer<PunishmentInfo> punishmentConsumer) {
+            specificPlayerInfo.useSpecificPlayerInfo(playerName, storableTarget -> consumeActivePunishmentInfoExplicitly(storableTarget, punishmentConsumer));
         }
 
         /**
          * Consumes the target's active punishments asynchronously, given their name
-         * @param name the player's name
+         * @param playerName the player's name
          * @param punishmentConsumer the consumer for the active punishments, executed synchronously
          */
-        public void consumeActivePunishmentInfoASync(String name, Consumer<PunishmentInfo> punishmentConsumer) {
-            playerManager.usePlayerInfoOrElseASync(name, info -> consumeActivePunishmentInfo(info, punishmentConsumer), str -> {});
+        public void consumeActivePunishmentInfoAsync(String playerName, Consumer<PunishmentInfo> punishmentConsumer) {
+            specificPlayerInfo.useSpecificPlayerInfoAsync(playerName, info -> consumeActivePunishmentInfo(info, punishmentConsumer));
         }
 
         /**
-         * Consumes the target's punishments asynchronously, given their {@link StorablePlayerInfo}
+         * Consumes the target's punishments asynchronously, given their name
          * Only offered asynchronously, as the database queries are costly
-         * @param playerInfo the player's {@link StorablePlayerInfo}
+         * @param playerName the player's name
          * @param punishmentConsumer the consumer for the punishments, executed synchronously
          */
-        public void consumePunishmentInfoASync(StorablePlayerInfo playerInfo, Consumer<List<PunishmentInfo>> punishmentConsumer) {
-            playerManager.usePlayerInfoOrElseASync(playerInfo.getName(), info -> database.executeResultQueryASync(storageStatements.getPunishmentsQuery(),
-                    preparedStatement -> preparedStatement.setString(1, getStorableTarget(playerInfo)), resultSet -> {
+        public void consumePunishmentInfoAsync(String playerName, Consumer<List<PunishmentInfo>> punishmentConsumer) {
+            specificPlayerInfo.useSpecificPlayerInfoAsync(playerName, storableTarget -> HIKARI_DATABASE.executeResultQueryASync(storageStatements.getPunishmentsQuery(),
+                    preparedStatement -> preparedStatement.setString(1, storableTarget), resultSet -> {
                             List<PunishmentInfo> punishmentInfoList;
 
                             try {
@@ -233,26 +209,16 @@ public class PunishmentManager {
                                 return;
                             }
 
-                            scheduler.runTask(task -> punishmentConsumer.accept(punishmentInfoList));
-                    }), str -> {});
+                            SCHEDULER.runTask(task -> punishmentConsumer.accept(punishmentInfoList));
+                    }));
         }
 
         /**
          * Asynchronously logs the given {@link PunishmentInfo} to the SQL database
          * @param punishmentInfo the {@link PunishmentInfo} to be logged
          */
-        public void logPlaceASync(@NotNull PunishmentInfo punishmentInfo) {
-            scheduler.runTaskAsynchronously(task -> logPlace(punishmentInfo));
-        }
-
-        /**
-         * Asynchronously pardons all active punishments of the specified target
-         * @param sender the pardoner
-         * @param targetInfo the target's {@link StorablePlayerInfo}
-         * @param reason the pardon reason
-         */
-        public void logPardonASync(@NotNull CommandSender sender, @NotNull StorablePlayerInfo targetInfo, @NotNull String reason) {
-            scheduler.runTaskAsynchronously(task -> logPardon(sender, targetInfo, reason));
+        public void logPlaceAsync(@NotNull PunishmentInfo punishmentInfo) {
+            SCHEDULER.runTaskAsynchronously(task -> logPlace(punishmentInfo));
         }
 
         /**
@@ -260,7 +226,7 @@ public class PunishmentManager {
          * @param punishmentInfo the {@link PunishmentInfo} to be logged
          */
         public void logPlace(@NotNull PunishmentInfo punishmentInfo) {
-            database.executeQuery(
+            HIKARI_DATABASE.executeQuery(
                     storageStatements.getPunishmentPlaceQuery(),
                     preparedStatement -> {
                         preparedStatement.setString(1, punishmentInfo.getStorableTarget());
@@ -273,21 +239,51 @@ public class PunishmentManager {
         }
 
         /**
-         * Synchronously pardons all active punishments of the specified target
+         * Asynchronously pardons all active punishments of the specified explicit storable target
          * @param sender the pardoner
-         * @param targetInfo the target's {@link StorablePlayerInfo}
+         * @param storableTarget the target's storable form
          * @param reason the pardon reason
          */
-        public void logPardon(@NotNull CommandSender sender, @NotNull StorablePlayerInfo targetInfo, @NotNull String reason) {
-            database.executeQuery(
+        public void logExplicitPardonAsync(@NotNull CommandSender sender, @NotNull String storableTarget, @NotNull String reason) {
+            SCHEDULER.runTaskAsynchronously(task -> logExplicitPardon(sender, storableTarget, reason));
+        }
+
+        /**
+         * Synchronously pardons all active punishments of the specified explicit storable target
+         * @param sender the pardoner
+         * @param storableTarget the target's storable form
+         * @param reason the pardon reason
+         */
+        public void logExplicitPardon(@NotNull CommandSender sender, @NotNull String storableTarget, @NotNull String reason) {
+            HIKARI_DATABASE.executeQuery(
                     storageStatements.getPunishmentPardonQuery(),
                     preparedStatement -> {
                         preparedStatement.setString(1, getStorableSender(sender));
                         preparedStatement.setString(2, reason);
-                        preparedStatement.setString(3, getStorableTarget(targetInfo));
+                        preparedStatement.setString(3, storableTarget);
                         preparedStatement.setTimestamp(4, new Timestamp(Utils.getCurrentTimeMillis()));
                     }
             );
+        }
+
+        /**
+         * Asynchronously pardons all active punishments of the specified target
+         * @param sender the pardoner
+         * @param target the target
+         * @param reason the pardon reason
+         */
+        public void logPardonAsync(@NotNull CommandSender sender, @NotNull OfflinePlayer target, @NotNull String reason) {
+            SCHEDULER.runTaskAsynchronously(task -> logPardon(sender, target, reason));
+        }
+
+        /**
+         * Synchronously pardons all active punishments of the specified target
+         * @param sender the pardoner
+         * @param target the target
+         * @param reason the pardon reason
+         */
+        public void logPardon(@NotNull CommandSender sender, @NotNull OfflinePlayer target, @NotNull String reason) {
+            specificPlayerInfo.useSpecificPlayerInfo(target.getName(), storableTarget -> logExplicitPardon(sender, storableTarget, reason));
         }
     }
 }

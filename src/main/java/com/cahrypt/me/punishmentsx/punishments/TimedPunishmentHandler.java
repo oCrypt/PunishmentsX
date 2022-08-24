@@ -1,9 +1,11 @@
 package com.cahrypt.me.punishmentsx.punishments;
 
-import com.cahrypt.me.punishmentsx.player.StorablePlayerInfo;
 import com.cahrypt.me.punishmentsx.util.Utils;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.regex.Pattern;
 
 public abstract class TimedPunishmentHandler extends PunishmentHandler {
 
@@ -46,9 +48,8 @@ public abstract class TimedPunishmentHandler extends PunishmentHandler {
     }
 
     @Override
-    protected boolean validatePunishment(@NotNull CommandSender sender, @NotNull String[] args, @NotNull StorablePlayerInfo targetInfo, @NotNull PunishmentInfo punishmentInfo) {
-        int timeIndex = getUsageIndex("time");
-        long expiry = getExpirationDateMillis(args[timeIndex]);
+    protected boolean validatePunishment(@NotNull CommandSender sender, @NotNull String[] args, @NotNull OfflinePlayer target, @NotNull PunishmentInfo punishmentInfo) {
+        long expiry = getExpirationDateMillis(args[1]);
 
         if (expiry == -1) {
             sender.sendMessage(Utils.INVALID_USAGE + "Please specify a valid time!");

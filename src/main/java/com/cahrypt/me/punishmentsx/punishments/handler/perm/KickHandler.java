@@ -1,6 +1,5 @@
 package com.cahrypt.me.punishmentsx.punishments.handler.perm;
 
-import com.cahrypt.me.punishmentsx.player.StorablePlayerInfo;
 import com.cahrypt.me.punishmentsx.punishments.PunishmentHandler;
 import com.cahrypt.me.punishmentsx.punishments.PunishmentInfo;
 import com.cahrypt.me.punishmentsx.util.Utils;
@@ -16,9 +15,7 @@ public class KickHandler extends PunishmentHandler {
     }
 
     @Override
-    protected boolean validatePunishment(@NotNull CommandSender sender, @NotNull String[] rawArgs, @NotNull StorablePlayerInfo targetInfo, @NotNull PunishmentInfo punishmentInfo) {
-        OfflinePlayer target = targetInfo.getOfflinePlayer();
-
+    protected boolean validatePunishment(@NotNull CommandSender sender, @NotNull String[] rawArgs, @NotNull OfflinePlayer target, @NotNull PunishmentInfo punishmentInfo) {
         if (target.isOnline()) {
             return true;
         }
@@ -28,7 +25,7 @@ public class KickHandler extends PunishmentHandler {
     }
 
     @Override
-    protected void onPunishmentPlace(@NotNull StorablePlayerInfo targetInfo, @NotNull PunishmentInfo punishmentInfo) {
-        targetInfo.getOfflinePlayer().getPlayer().kickPlayer(ChatColor.RED + "You have been kicked\n" + "Reason: " + punishmentInfo.getReason());
+    protected void onPunishmentPlace(@NotNull OfflinePlayer target, @NotNull PunishmentInfo punishmentInfo) {
+        target.getPlayer().kickPlayer(ChatColor.RED + "You have been kicked\n" + "Reason: " + punishmentInfo.getReason());
     }
 }

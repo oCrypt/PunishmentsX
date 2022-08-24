@@ -2,7 +2,6 @@ package com.cahrypt.me.punishmentsx.punishments.display;
 
 import com.cahrypt.me.punishmentsx.PunishmentsX;
 import com.cahrypt.me.punishmentsx.player.PlayerManager;
-import com.cahrypt.me.punishmentsx.player.StorablePlayerInfo;
 import com.cahrypt.me.punishmentsx.punishments.PunishmentInfo;
 import com.cahrypt.me.punishmentsx.punishments.PunishmentManager;
 import com.cahrypt.me.punishmentsx.util.Utils;
@@ -37,9 +36,9 @@ public class PunishmentInfoDisplay {
     private final GuiItem infoGuiFiller = new DisplayGuiItem(ColorableMaterials.STAINED_GLASS_PANE.withColor(MaterialColors.RED));
 
     private final PunishmentsX main;
-    private final PlayerManager playerManager;
 
     private final OfflinePlayer target;
+    private final String targetName;
 
     /**
      * Creates a new system of GUIs to display the specified target's punishment information
@@ -47,29 +46,29 @@ public class PunishmentInfoDisplay {
      */
     public PunishmentInfoDisplay(OfflinePlayer target) {
         this.main = JavaPlugin.getPlugin(PunishmentsX.class);
-        this.playerManager = main.getPlayerManager();
 
         this.target = target;
+        this.targetName = target.getName();
     }
 
     /**
-     * Builds the main info GUI for the given {@link StorablePlayerInfo}
+     * Builds the main info GUI
      * @return the main info GUI
      */
-    private Gui buildInfoGui(StorablePlayerInfo targetInfo) {
-        Gui gui = new Gui(main, targetInfo.getName() + "'s Punishment Info", infoGuiRows);
+    private Gui buildInfoGui() {
+        Gui gui = new Gui(main, targetName + "'s Punishment Info", infoGuiRows);
         Page page = new Page(gui);
 
         page.setItem(4, new DisplayGuiItem(ItemBuilder.of(Material.PLAYER_HEAD)
-                .consumeCustomMeta(SkullMeta.class, skullMeta -> skullMeta.setOwningPlayer(targetInfo.getOfflinePlayer()))
-                .displayName(net.md_5.bungee.api.ChatColor.GREEN + targetInfo.getName() + "'s Logs")
+                .consumeCustomMeta(SkullMeta.class, skullMeta -> skullMeta.setOwningPlayer(target))
+                .displayName(net.md_5.bungee.api.ChatColor.GREEN + targetName + "'s Logs")
                 .build())
         );
 
-        page.setItem(getInfoGuiSlot(2), getClickableDisplayItem(SpecificDisplay.MUTE_DISPLAY, targetInfo));
-        page.setItem(getInfoGuiSlot(3), getClickableDisplayItem(SpecificDisplay.KICK_DISPLAY, targetInfo));
-        page.setItem(getInfoGuiSlot(5), getClickableDisplayItem(SpecificDisplay.BAN_DISPLAY, targetInfo));
-        page.setItem(getInfoGuiSlot(6), getClickableDisplayItem(SpecificDisplay.BLACKLIST_DISPLAY, targetInfo));
+        page.setItem(getInfoGuiSlot(2), getClickableDisplayItem(SpecificDisplay.MUTE_DISPLAY));
+        page.setItem(getInfoGuiSlot(3), getClickableDisplayItem(SpecificDisplay.KICK_DISPLAY));
+        page.setItem(getInfoGuiSlot(5), getClickableDisplayItem(SpecificDisplay.BAN_DISPLAY));
+        page.setItem(getInfoGuiSlot(6), getClickableDisplayItem(SpecificDisplay.BLACKLIST_DISPLAY));
 
         page.fillEmpty(infoGuiFiller);
         gui.setPage(page);
@@ -78,13 +77,12 @@ public class PunishmentInfoDisplay {
     }
 
     /**
-     * Create a clickable item from the specified {@link StorablePlayerInfo} to open the specified {@link SpecificDisplay} GUI
+     * Create a clickable item to open the specified {@link SpecificDisplay} GUI
      * @param specificDisplay the desired {@link SpecificDisplay}
-     * @param targetInfo the target's SQL-storable information
      * @return the clickable item
      */
-    private ClickableGuiItem getClickableDisplayItem(SpecificDisplay specificDisplay, StorablePlayerInfo targetInfo) {
-        return new ClickableGuiItem(specificDisplay.getDisplayItem(), event -> specificDisplay.display((Player) event.getWhoClicked(), targetInfo, this));
+    private ClickableGuiItem getClickableDisplayItem(SpecificDisplay specificDisplay) {
+        return new ClickableGuiItem(specificDisplay.getDisplayItem(), event -> specificDisplay.display((Player) event.getWhoClicked(), targetName, this));
     }
 
     /**
@@ -101,7 +99,7 @@ public class PunishmentInfoDisplay {
      * @param player the player to display to
      */
     public void displayPunishmentInfo(Player player) {
-        playerManager.usePlayerInfoOrElseASync(target.getName(), info -> buildInfoGui(info).show(player), str -> {});
+        buildInfoGui().show(player);
     }
 
     public enum SpecificDisplay {
@@ -210,25 +208,25 @@ public class PunishmentInfoDisplay {
         }
 
         /**
-         * Display the specific punishment information of the provided {@link StorablePlayerInfo} to the provided player
+         * Display the specific punishment information of the provided target to the provided player
          * @param player the punishment information viewer
-         * @param targetInfo the target information
+         * @param targetName the target's name
          */
-        public void display(Player player, StorablePlayerInfo targetInfo) {
-            display(player, targetInfo, null);
+        public void display(Player player, String targetName) {
+            display(player, targetName, null);
         }
 
         /**
-         * Display the specific punishment information of the provided {@link StorablePlayerInfo} to the provided player
+         * Display the specific punishment information of the provided target to the provided player
          * (Allows for a {@link PunishmentInfoDisplay} main information page)
          * @param player the punishment information viewer
-         * @param targetInfo the target information
+         * @param targetName the target's name
          */
-        public void display(@NotNull Player player, @NotNull StorablePlayerInfo targetInfo, @Nullable PunishmentInfoDisplay homepage) {
+        public void display(@NotNull Player player, @NotNull String targetName, @Nullable PunishmentInfoDisplay homepage) {
             Gui gui = new Gui(JavaPlugin.getPlugin(PunishmentsX.class), player.getName() + "'s " + displayName, PUNISHMENT_GUI_ROWS);
             ListPage listPage = new ListPage(gui, PUNISHMENT_GUI_FILLER, buildBackItem(player, homepage));
 
-            storage.consumePunishmentInfoASync(targetInfo, punishmentInfoList -> {
+            storage.consumePunishmentInfoAsync(targetName, punishmentInfoList -> {
                 punishmentInfoList.forEach(punishmentInfo -> listPage.addItem(buildPunishmentDisplayItem(punishmentInfo)));
 
                 gui.setPage(listPage);

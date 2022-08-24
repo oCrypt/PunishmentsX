@@ -9,11 +9,12 @@ public class PunishmentSQLStatements {
 
     /**
      * Obtain the appropriate table creation query
+     * @param offenderCharSize the size of the SQL char for the offender's ID
      * @return the table creation query
      */
-    public String getPunishmentTableQuery() {
+    public String getPunishmentTableQuery(int offenderCharSize) {
         return "CREATE TABLE IF NOT EXISTS " + punishmentTableName + " (" +
-                "offenderID VARCHAR(36) NOT NULL, " +
+                "offenderID CHAR(" + offenderCharSize + ") NOT NULL, " +
                 "punisherID VARCHAR(36) NOT NULL, " +
                 "reason VARCHAR(50) NOT NULL, " +
                 "punishDate TIMESTAMP NOT NULL, " +
@@ -21,7 +22,7 @@ public class PunishmentSQLStatements {
                 "pardoned BOOL NOT NULL, " +
                 "pardoner VARCHAR(36), " +
                 "pardonReason VARCHAR(50), " +
-                "PRIMARY KEY (offenderID, punisherID, reason, punishDate, expirationDate)" +
+                "PRIMARY KEY (offenderID, punisherID, reason, punishDate)" +
                 ");";
     }
 

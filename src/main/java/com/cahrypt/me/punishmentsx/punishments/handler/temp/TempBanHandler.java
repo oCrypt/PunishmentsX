@@ -1,6 +1,5 @@
 package com.cahrypt.me.punishmentsx.punishments.handler.temp;
 
-import com.cahrypt.me.punishmentsx.player.StorablePlayerInfo;
 import com.cahrypt.me.punishmentsx.punishments.PunishmentInfo;
 import com.cahrypt.me.punishmentsx.punishments.TimedPunishmentHandler;
 import org.bukkit.ChatColor;
@@ -14,9 +13,7 @@ public class TempBanHandler extends TimedPunishmentHandler {
     }
 
     @Override
-    protected void onPunishmentPlace(@NotNull StorablePlayerInfo playerInfo, @NotNull PunishmentInfo punishmentInfo) {
-        OfflinePlayer target = playerInfo.getOfflinePlayer();
-
+    protected void onPunishmentPlace(@NotNull OfflinePlayer target, @NotNull PunishmentInfo punishmentInfo) {
         if (target.isOnline()) {
             target.getPlayer().kickPlayer(ChatColor.RED + "" + ChatColor.UNDERLINE + "You have been temporarily banned");
         }
