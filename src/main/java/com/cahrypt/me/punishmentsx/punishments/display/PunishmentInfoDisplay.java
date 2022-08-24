@@ -33,8 +33,8 @@ public class PunishmentInfoDisplay {
     private static final int PUNISHMENT_GUI_ROWS = 5;
     private static final GuiItem PUNISHMENT_GUI_FILLER = new DisplayGuiItem(ColorableMaterials.STAINED_GLASS_PANE.withColor(MaterialColors.RED));
 
-    private final int INFO_GUI_ROWS = 3;
-    private final GuiItem INFO_GUI_FILLER = new DisplayGuiItem(ColorableMaterials.STAINED_GLASS_PANE.withColor(MaterialColors.RED));
+    private final int infoGuiRows = 3;
+    private final GuiItem infoGuiFiller = new DisplayGuiItem(ColorableMaterials.STAINED_GLASS_PANE.withColor(MaterialColors.RED));
 
     private final PunishmentsX main;
     private final PlayerManager playerManager;
@@ -57,7 +57,7 @@ public class PunishmentInfoDisplay {
      * @return the main info GUI
      */
     private Gui buildInfoGui(StorablePlayerInfo targetInfo) {
-        Gui gui = new Gui(main, targetInfo.getName() + "'s Punishment Info", INFO_GUI_ROWS);
+        Gui gui = new Gui(main, targetInfo.getName() + "'s Punishment Info", infoGuiRows);
         Page page = new Page(gui);
 
         page.setItem(4, new DisplayGuiItem(ItemBuilder.of(Material.PLAYER_HEAD)
@@ -71,7 +71,7 @@ public class PunishmentInfoDisplay {
         page.setItem(getInfoGuiSlot(5), getClickableDisplayItem(SpecificDisplay.BAN_DISPLAY, targetInfo));
         page.setItem(getInfoGuiSlot(6), getClickableDisplayItem(SpecificDisplay.BLACKLIST_DISPLAY, targetInfo));
 
-        page.fillEmpty(INFO_GUI_FILLER);
+        page.fillEmpty(infoGuiFiller);
         gui.setPage(page);
 
         return gui;
@@ -93,7 +93,7 @@ public class PunishmentInfoDisplay {
      * @return the slot number
      */
     private int getInfoGuiSlot(int column) {
-        return (int) (Math.floor(INFO_GUI_ROWS / 2D) * 9) + column;
+        return (int) (Math.floor(infoGuiRows / 2D) * 9) + column;
     }
 
     /**
