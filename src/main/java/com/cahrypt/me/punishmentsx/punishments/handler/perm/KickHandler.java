@@ -1,6 +1,6 @@
 package com.cahrypt.me.punishmentsx.punishments.handler.perm;
 
-import com.cahrypt.me.punishmentsx.punishments.PunishmentHandler;
+import com.cahrypt.me.punishmentsx.punishments.handler.PermPunishmentHandler;
 import com.cahrypt.me.punishmentsx.punishments.PunishmentInfo;
 import com.cahrypt.me.punishmentsx.util.Utils;
 import org.bukkit.ChatColor;
@@ -8,14 +8,14 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
-public class KickHandler extends PunishmentHandler {
+public class KickHandler extends PermPunishmentHandler {
 
     public KickHandler() {
         super("kick");
     }
 
     @Override
-    protected boolean validatePunishment(@NotNull CommandSender sender, @NotNull String[] rawArgs, @NotNull OfflinePlayer target, @NotNull PunishmentInfo punishmentInfo) {
+    protected boolean validatePunishment(@NotNull CommandSender sender, @NotNull OfflinePlayer target) {
         if (target.isOnline()) {
             return true;
         }

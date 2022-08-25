@@ -2,6 +2,7 @@ package com.cahrypt.me.punishmentsx.punishments;
 
 import com.cahrypt.me.punishmentsx.PunishmentsX;
 import com.cahrypt.me.punishmentsx.player.PlayerManager;
+import com.cahrypt.me.punishmentsx.punishments.handler.PunishmentHandler;
 import com.cahrypt.me.punishmentsx.punishments.handler.perm.BanHandler;
 import com.cahrypt.me.punishmentsx.punishments.handler.perm.MuteHandler;
 import com.cahrypt.me.punishmentsx.punishments.handler.temp.TempBanHandler;

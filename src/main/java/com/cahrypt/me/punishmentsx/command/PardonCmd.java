@@ -3,7 +3,7 @@ package com.cahrypt.me.punishmentsx.command;
 import com.cahrypt.me.punishmentsx.PunishmentsX;
 import com.cahrypt.me.punishmentsx.punishments.PunishmentManager;
 import com.cahrypt.me.punishmentsx.util.Utils;
-import dev.fumaz.commons.bukkit.command.CmdArguments;
+import dev.fumaz.commons.bukkit.command.Arguments;
 import dev.fumaz.commons.bukkit.command.annotation.SubCommand;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -18,7 +18,7 @@ public class PardonCmd extends VoidPunishmentCmd {
         this.storage = storage;
     }
 
-    @SubCommand(cmdArgStructure = { CmdArguments.CmdArgumentTypes.OFFLINE_PLAYER, CmdArguments.CmdArgumentTypes.STRING }, permission = Utils.PUNISHMENT_ADMIN_PERMISSION, exactMatch = false)
+    @SubCommand(cmdArgStructure = { Arguments.CmdArgumentTypes.OFFLINE_PLAYER, Arguments.CmdArgumentTypes.STRING }, permission = Utils.PUNISHMENT_ADMIN_PERMISSION, exactMatch = false)
     public void onInfoCommand(CommandSender sender, List<Object> usefulArgs, String[] cmdArgs) {
         OfflinePlayer target = (OfflinePlayer) usefulArgs.get(0);
 

@@ -102,13 +102,8 @@ public class PlayerManager {
         public void useSpecificPlayerInfoOrElseAsync(String name, Consumer<String> playerInfoConsumer, Consumer<String> elseConsumer) {
             HIKARI_DATABASE.executeResultQueryASync(PlayerSQLStatements.FETCH_PLAYER_INFO, preparedStatement -> preparedStatement.setString(1, name), resultSet -> {
                 if (resultSet.next()) {
-                    SCHEDULER.runTask(task -> {
-                        try {
-                            playerInfoConsumer.accept(resultSet.getString(columnLabel));
-                        } catch (SQLException e) {
-                            e.printStackTrace();
-                        }
-                    });
+                    String playerInfo = resultSet.getString(columnLabel);
+                    SCHEDULER.runTask(task -> playerInfoConsumer.accept(playerInfo));
                 } else {
                     elseConsumer.accept(name);
                 }

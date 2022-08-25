@@ -36,6 +36,23 @@ public class PunishmentInfo {
     }
 
     /**
+     * Create new punishment information given an SQL-storable target, an SQL-storable sender, and a punishment reason
+     * @param storableTarget SQL-storable target
+     * @param storableSender SQL-storable sender
+     * @param reason punishment reason
+     */
+    public PunishmentInfo(@NotNull String storableTarget, @NotNull String storableSender, @NotNull String reason, long expiry) {
+        this.storableTarget = storableTarget;
+        this.storableSender = storableSender;
+        this.punishDate = new Timestamp(Utils.getCurrentTimeMillis());
+        this.expirationDate = new Timestamp(Utils.getCurrentTimeMillis() + expiry);
+        this.reason = reason;
+
+        this.pardoned = false;
+        this.pardonReason = null;
+    }
+
+    /**
      * Obtain punishment information from the provided {@link ResultSet}
      * @param resultSet the {@link ResultSet} to read from
      * @throws SQLException if the {@link ResultSet} is not appropriate to fetch punishment information from

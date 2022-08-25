@@ -3,7 +3,7 @@ package com.cahrypt.me.punishmentsx.command;
 import com.cahrypt.me.punishmentsx.PunishmentsX;
 import com.cahrypt.me.punishmentsx.punishments.display.PunishmentInfoDisplay;
 import com.cahrypt.me.punishmentsx.util.Utils;
-import dev.fumaz.commons.bukkit.command.CmdArguments;
+import dev.fumaz.commons.bukkit.command.Arguments;
 import dev.fumaz.commons.bukkit.command.PlayerCommandExecutor;
 import dev.fumaz.commons.bukkit.command.annotation.SubCommand;
 import org.bukkit.Bukkit;
@@ -37,7 +37,7 @@ public class InfoCmd extends PlayerCommandExecutor {
         onInvalidCommandUsage(commandSender, new String[] {});
     }
 
-    @SubCommand(cmdArgStructure = { CmdArguments.CmdArgumentTypes.OFFLINE_PLAYER }, permission = Utils.PUNISHMENT_ADMIN_PERMISSION)
+    @SubCommand(cmdArgStructure = { Arguments.CmdArgumentTypes.OFFLINE_PLAYER }, permission = Utils.PUNISHMENT_ADMIN_PERMISSION)
     public void onInfoCommand(CommandSender sender, List<Object> usefulArgs, String[] cmdArgs) {
         OfflinePlayer target = (OfflinePlayer) usefulArgs.get(0);
 

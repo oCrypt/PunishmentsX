@@ -8,7 +8,7 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
-public class VoidPunishmentCmd extends VoidCommandExecutor {
+public abstract class VoidPunishmentCmd extends VoidCommandExecutor {
     private final PluginCommand pluginCommand;
 
     public VoidPunishmentCmd(@NotNull Class<? extends JavaPlugin> clazz, @NotNull String commandName) {

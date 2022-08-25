@@ -1,20 +1,21 @@
 package com.cahrypt.me.punishmentsx.punishments.handler.perm;
 
-import com.cahrypt.me.punishmentsx.punishments.PunishmentHandler;
+import com.cahrypt.me.punishmentsx.punishments.handler.PermPunishmentHandler;
+import com.cahrypt.me.punishmentsx.punishments.handler.PunishmentHandler;
 import com.cahrypt.me.punishmentsx.punishments.PunishmentInfo;
 import com.cahrypt.me.punishmentsx.util.Utils;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
-public class MuteHandler extends PunishmentHandler {
+public class MuteHandler extends PermPunishmentHandler {
 
     public MuteHandler() {
         super("mute");
     }
 
     @Override
-    protected boolean validatePunishment(@NotNull CommandSender sender, @NotNull String[] rawArgs, @NotNull OfflinePlayer target, @NotNull PunishmentInfo punishmentInfo) {
+    protected boolean validatePunishment(@NotNull CommandSender sender, @NotNull OfflinePlayer target) {
         return true;
     }
 
