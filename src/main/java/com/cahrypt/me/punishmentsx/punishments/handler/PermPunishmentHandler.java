@@ -28,11 +28,11 @@ public abstract class PermPunishmentHandler extends PunishmentHandler {
         OfflinePlayer target = (OfflinePlayer) usefulArgs.get(0);
         String targetName = target.getName();
 
-        storage.getStorableTargetType().useSpecificPlayerInfoOrElseAsync(
+        playerManager.usePlayerInfoOrElseAsync(
                 targetName,
-                storableTarget -> {
+                info -> {
                     String reason = Utils.concatArray(rawArgs, " ", REASON_INDEX);
-                    PunishmentInfo punishmentInfo = new PunishmentInfo(storableTarget, storage.getStorableSender(sender), reason);
+                    PunishmentInfo punishmentInfo = new PunishmentInfo(storage.getStorableTarget(info), storage.getStorableSender(sender), reason);
                     tryPunishmentPlace(sender, target, punishmentInfo);
                 },
                 () -> sender.sendMessage(Utils.INVALID_USAGE + "'" + targetName + "' has not joined before or is an invalid player!")

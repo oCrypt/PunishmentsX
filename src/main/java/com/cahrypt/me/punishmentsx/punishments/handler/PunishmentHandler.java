@@ -75,7 +75,7 @@ public abstract class PunishmentHandler extends VoidPunishmentCmd {
             return;
         }
 
-        storage.logExplicitPardon(sender, punishmentInfo.getStorableTarget(), "Overridden Punishment");
+        storage.logExplicitPardon(punishmentInfo.getStorableSender(), punishmentInfo.getStorableTarget(), "Overridden Punishment");
         storage.logPlaceAsync(punishmentInfo);
         onPunishmentPlace(target, punishmentInfo);
 
