@@ -37,7 +37,7 @@ public abstract class TimedPunishmentHandler extends PunishmentHandler {
                     PunishmentInfo punishmentInfo = new PunishmentInfo(storableTarget, storage.getStorableSender(sender), reason, expiry);
                     tryPunishmentPlace(sender, target, punishmentInfo);
                 },
-                name -> sender.sendMessage(Utils.INVALID_USAGE + "'" + name + "' has not joined before or is an invalid player!")
+                () -> sender.sendMessage(Utils.INVALID_USAGE + "'" + targetName + "' has not joined before or is an invalid player!")
         );
     }
 }

@@ -210,7 +210,7 @@ public class PunishmentManager {
                                 return;
                             }
 
-                            SCHEDULER.runTask(task -> punishmentConsumer.accept(punishmentInfoList));
+                            SCHEDULER.runTask(() -> punishmentConsumer.accept(punishmentInfoList));
                     }));
         }
 
@@ -219,7 +219,7 @@ public class PunishmentManager {
          * @param punishmentInfo the {@link PunishmentInfo} to be logged
          */
         public void logPlaceAsync(@NotNull PunishmentInfo punishmentInfo) {
-            SCHEDULER.runTaskAsynchronously(task -> logPlace(punishmentInfo));
+            SCHEDULER.runTaskAsynchronously(() -> logPlace(punishmentInfo));
         }
 
         /**
@@ -246,7 +246,7 @@ public class PunishmentManager {
          * @param reason the pardon reason
          */
         public void logExplicitPardonAsync(@NotNull CommandSender sender, @NotNull String storableTarget, @NotNull String reason) {
-            SCHEDULER.runTaskAsynchronously(task -> logExplicitPardon(sender, storableTarget, reason));
+            SCHEDULER.runTaskAsynchronously(() -> logExplicitPardon(sender, storableTarget, reason));
         }
 
         /**
@@ -274,7 +274,7 @@ public class PunishmentManager {
          * @param reason the pardon reason
          */
         public void logPardonAsync(@NotNull CommandSender sender, @NotNull OfflinePlayer target, @NotNull String reason) {
-            SCHEDULER.runTaskAsynchronously(task -> logPardon(sender, target, reason));
+            SCHEDULER.runTaskAsynchronously(() -> logPardon(sender, target, reason));
         }
 
         /**
