@@ -21,6 +21,7 @@ public class PlayerJoinListener implements FListener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         StorablePlayerInfo storablePlayerInfo = StorablePlayerInfo.from(event.getPlayer());
+        storablePlayerInfo.log();
         playerManager.cachePlayerInfo(storablePlayerInfo);
     }
 }

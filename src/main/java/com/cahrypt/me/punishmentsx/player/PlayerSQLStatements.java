@@ -16,7 +16,7 @@ public class PlayerSQLStatements {
      * The raw query for inserting a new player into the database
      * (Automatically updates upon duplicate entry)
      */
-    protected static final String INSERT_NEW_PLAYER  = "INSERT INTO PlayerInfo (recentName, uuid, recentAddress) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE recentName = ?, uuid = ?, recentAddress = ?;";
+    protected static final String INSERT_NEW_PLAYER  = "INSERT INTO PlayerInfo VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE recentName = ?, uuid = ?, recentAddress = ?;";
 
     /**
      * The raw query for fetching a player's stored information

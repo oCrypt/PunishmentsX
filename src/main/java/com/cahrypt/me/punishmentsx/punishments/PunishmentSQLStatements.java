@@ -30,7 +30,7 @@ public class PunishmentSQLStatements {
      * @return the punishment placement query
      */
     public String getPunishmentPlaceQuery() {
-        return "INSERT INTO " + punishmentTableName + " (offenderID, punisherID, reason, punishDate, expirationDate, pardoned, pardoner, pardonReason) VALUES (?, ?, ?, ?, ?, 0, NULL, NULL);";
+        return "INSERT INTO " + punishmentTableName + " VALUES (?, ?, ?, ?, ?, 0, NULL, NULL);";
     }
 
     /**
