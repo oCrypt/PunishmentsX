@@ -147,6 +147,11 @@ public class PunishmentManager {
             HIKARI_DATABASE.executeQueryASync(storageStatements.getPunishmentTableQuery());
         }
 
+        /**
+         * Convert player's {@link StorablePlayerInfo} into the appropriate SQL storable string
+         * @param playerInfo the {@link StorablePlayerInfo}
+         * @return the SQL-storable string
+         */
         public abstract String getStorableTarget(@NotNull StorablePlayerInfo playerInfo);
 
         /**

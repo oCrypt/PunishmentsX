@@ -22,14 +22,28 @@ public final class PlayerManager {
         hikariDatabase.executeQueryASync(PlayerSQLStatements.CREATE_PLAYER_INFO_TABLE);
     }
 
+    /**
+     * Adds {@link StorablePlayerInfo} cache
+     * @param playerInfo the {@link StorablePlayerInfo} to store
+     */
     public void cachePlayerInfo(StorablePlayerInfo playerInfo) {
         cachedPlayerInfo.put(playerInfo.getName(), playerInfo);
     }
 
+    /**
+     * Removes {@link StorablePlayerInfo} cache
+     * @param playerName the player's name
+     */
     public void removePlayerInfo(String playerName) {
         cachedPlayerInfo.remove(playerName);
     }
 
+    /**
+     * Use cached player's {@link StorablePlayerInfo} or else run a runnable
+     * @param playerName the player's name
+     * @param playerInfoConsumer the {@link StorablePlayerInfo} consumer
+     * @param elseRunnable the runnable that runs if not cached
+     */
     public void useCachedPlayerInfoOrElse(String playerName, Consumer<StorablePlayerInfo> playerInfoConsumer, Runnable elseRunnable) {
         if (cachedPlayerInfo.containsKey(playerName)) {
             playerInfoConsumer.accept(cachedPlayerInfo.get(playerName));

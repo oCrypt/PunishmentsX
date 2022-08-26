@@ -4,6 +4,7 @@ import com.cahrypt.me.punishmentsx.command.InfoCmd;
 import com.cahrypt.me.punishmentsx.command.PardonCmd;
 import com.cahrypt.me.punishmentsx.player.PlayerManager;
 import com.cahrypt.me.punishmentsx.player.listener.PlayerJoinListener;
+import com.cahrypt.me.punishmentsx.player.listener.PlayerLeaveListener;
 import com.cahrypt.me.punishmentsx.punishments.PunishmentManager;
 import com.cahrypt.me.punishmentsx.punishments.listener.*;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -19,6 +20,7 @@ public final class PunishmentsX extends JavaPlugin {
 
         this.playerManager = new PlayerManager();
         new PlayerJoinListener();
+        new PlayerLeaveListener();
 
         // PUNISHMENT
 
