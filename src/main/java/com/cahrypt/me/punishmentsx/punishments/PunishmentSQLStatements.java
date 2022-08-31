@@ -18,10 +18,10 @@ public class PunishmentSQLStatements {
                 "reason VARCHAR(50) NOT NULL, " +
                 "punishDate TIMESTAMP NOT NULL, " +
                 "expirationDate TIMESTAMP NOT NULL, " +
-                "pardoned BOOL NOT NULL, " +
-                "pardoner VARCHAR, " +
-                "pardonReason VARCHAR(50), " +
-                "PRIMARY KEY (offenderID, punisherID, reason, punishDate)" +
+                "pardoned BOOL NOT NULL DEFAULT 0, " +
+                "pardoner VARCHAR DEFAULT NULL, " +
+                "pardonReason VARCHAR(50) DEFAULT NULL, " +
+                "PRIMARY KEY (offenderID, punisherID, reason, punishDate), " +
                 ");";
     }
 
@@ -30,7 +30,7 @@ public class PunishmentSQLStatements {
      * @return the punishment placement query
      */
     public String getPunishmentPlaceQuery() {
-        return "INSERT INTO " + punishmentTableName + " VALUES (?, ?, ?, ?, ?, 0, NULL, NULL);";
+        return "INSERT INTO " + punishmentTableName + " (offenderID, punisherID, reason, punishDate, expirationDate) VALUES (?, ?, ?, ?, ?);";
     }
 
     /**
