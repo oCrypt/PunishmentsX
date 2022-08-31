@@ -2,6 +2,7 @@ package com.cahrypt.me.punishmentsx.punishments;
 
 import com.cahrypt.me.punishmentsx.util.Utils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -28,7 +29,7 @@ public class PunishmentInfo {
         this.storableTarget = storableTarget;
         this.storableSender = storableSender;
         this.punishDate = new Timestamp(Utils.getCurrentTimeMillis());
-        this.expirationDate = new Timestamp(Utils.getCurrentTimeMillis() + Utils.PERMANENT_PUNISHMENT_TIME);
+        this.expirationDate = null;
         this.reason = reason;
 
         this.pardoned = false;
@@ -169,7 +170,7 @@ public class PunishmentInfo {
     /**
      * @return the {@link Timestamp} of the expiration date
      */
-    @NotNull
+    @Nullable
     public Timestamp getExpiry() {
         return expirationDate;
     }

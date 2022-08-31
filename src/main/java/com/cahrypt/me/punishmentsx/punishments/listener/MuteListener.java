@@ -9,6 +9,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
+import java.sql.Timestamp;
+
 public class MuteListener extends ActivePunishmentListener {
 
     public MuteListener() {
@@ -20,14 +22,13 @@ public class MuteListener extends ActivePunishmentListener {
         Player player = event.getPlayer();
 
         storage.consumeActivePunishmentInfo(player.getName(), info -> {
-            Bukkit.getLogger().info("wart");
+            event.setCancelled(true);
+            Timestamp expiry = info.getExpiry();
 
-                    event.setCancelled(true);
-
-                    player.sendMessage(
-                            ChatColor.RED + Utils.ERROR_PREFIX + "You are muted!" + "\n" +
-                                    ChatColor.GRAY + "Expiry: " + Utils.formatTimestamp(info.getExpiry()) + "\n" +
-                                    ChatColor.GRAY + "Reason: " + info.getReason()
+            player.sendMessage(
+                    ChatColor.RED + Utils.ERROR_PREFIX + "You are muted!" + "\n" +
+                            ChatColor.GRAY + "Expiry: " + (expiry == null ? "Permanent" : Utils.formatTimestamp(expiry)) + "\n" +
+                            ChatColor.GRAY + "Reason: " + info.getReason()
                     );
                 }
         );

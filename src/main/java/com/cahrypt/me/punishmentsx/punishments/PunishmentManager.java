@@ -252,7 +252,11 @@ public class PunishmentManager {
                         preparedStatement.setString(2, punishmentInfo.getStorableSender());
                         preparedStatement.setString(3, punishmentInfo.getReason());
                         preparedStatement.setTimestamp(4, punishmentInfo.getPunishDate());
-                        preparedStatement.setTimestamp(5, punishmentInfo.getExpiry());
+
+                        Timestamp expiry = punishmentInfo.getExpiry();
+                        if (expiry != null) {
+                            preparedStatement.setTimestamp(5, punishmentInfo.getExpiry());
+                        }
                     }
             );
         }

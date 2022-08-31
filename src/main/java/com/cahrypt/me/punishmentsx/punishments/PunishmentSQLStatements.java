@@ -17,7 +17,7 @@ public class PunishmentSQLStatements {
                 "punisherID VARCHAR NOT NULL, " +
                 "reason VARCHAR(50) NOT NULL, " +
                 "punishDate TIMESTAMP NOT NULL, " +
-                "expirationDate TIMESTAMP NOT NULL, " +
+                "expirationDate TIMESTAMP DEFAULT NULL, " +
                 "pardoned BOOL NOT NULL DEFAULT 0, " +
                 "pardoner VARCHAR DEFAULT NULL, " +
                 "pardonReason VARCHAR(50) DEFAULT NULL, " +
