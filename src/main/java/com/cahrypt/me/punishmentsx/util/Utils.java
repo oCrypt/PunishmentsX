@@ -17,10 +17,6 @@ public final class Utils {
     public static final String SUCCESS_PREFIX = ChatColor.GREEN + "[✔]" + ChatColor.GRAY + " ";
     public static final String INVALID_USAGE = ERROR_PREFIX + ChatColor.RED + "Invalid Punishment Command Usage! " + ChatColor.GRAY;
 
-    // PUNISHMENT TIMES
-
-    public static final long PERMANENT_PUNISHMENT_TIME = 315360000000L;
-
     // PERMISSION
 
     public static final String PUNISHMENT_ADMIN_PERMISSION = "punishment.admin";
@@ -38,7 +34,7 @@ public final class Utils {
     public static final long YEAR_MILLIS = 1000L*60*60*24*7*4*12;
 
     /**
-     * Obtains the correct time in milliseconds for the specified timezone
+     * Obtains the correct time in milliseconds for my timezone since I'm not testing locally lmao
      * @return the accurate time zone
      */
     public static long getCurrentTimeMillis() {

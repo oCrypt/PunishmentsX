@@ -12,15 +12,35 @@ import java.util.function.Consumer;
 public final class PlayerManager {
     private final HikariDatabase hikariDatabase;
     private final Scheduler scheduler;
+
     private final Map<String, StorablePlayerInfo> cachedPlayerInfo;
+    private final Map<String, StorablePlayerInfo> cachedPreLoginInfo;
 
     public PlayerManager() {
         this.hikariDatabase = DataSource.getHikariDatabase();
         this.scheduler = Scheduler.of(PunishmentsX.class);
         this.cachedPlayerInfo = new HashMap<>();
+        this.cachedPreLoginInfo = new HashMap<>();
 
         hikariDatabase.executeQueryASync(PlayerSQLStatements.CREATE_PLAYER_INFO_TABLE);
     }
+
+    /**
+     * Adds {@link StorablePlayerInfo} as pre-login cache for 10 seconds
+     * @param playerInfo the {@link StorablePlayerInfo} to store
+     */
+    public void cachePreLoginInfo(StorablePlayerInfo playerInfo) {
+        cachedPreLoginInfo.put(playerInfo.getName(), playerInfo);
+    }
+
+    public void removePreLoginCache(String playerName) {
+        cachedPreLoginInfo.remove(playerName);
+    }
+
+    public StorablePlayerInfo getPreLoginCache(String playerName) {
+        return cachedPreLoginInfo.get(playerName);
+    }
+
 
     /**
      * Adds {@link StorablePlayerInfo} cache
@@ -34,7 +54,7 @@ public final class PlayerManager {
      * Removes {@link StorablePlayerInfo} cache
      * @param playerName the player's name
      */
-    public void removePlayerInfo(String playerName) {
+    public void removePlayerCache(String playerName) {
         cachedPlayerInfo.remove(playerName);
     }
 
@@ -92,7 +112,8 @@ public final class PlayerManager {
                             } else {
                                 elseRunnable.run();
                             }
-                        }));
+                        })
+        );
     }
 
     /**
@@ -111,6 +132,7 @@ public final class PlayerManager {
                         resultSet -> {
                             StorablePlayerInfo storablePlayerInfo = StorablePlayerInfo.from(resultSet);
                             scheduler.runTask((resultSet.next() ? () -> playerInfoConsumer.accept(storablePlayerInfo) : elseRunnable));
-                        }));
+                        })
+        );
     }
 }

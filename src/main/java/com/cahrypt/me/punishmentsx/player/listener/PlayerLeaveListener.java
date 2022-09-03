@@ -19,6 +19,6 @@ public class PlayerLeaveListener implements FListener {
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
-        playerManager.removePlayerInfo(event.getPlayer().getName());
+        playerManager.removePlayerCache(event.getPlayer().getName());
     }
 }
