@@ -26,6 +26,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.sql.Timestamp;
 import java.util.UUID;
 
 public class PunishmentInfoDisplay {
@@ -160,14 +161,15 @@ public class PunishmentInfoDisplay {
             }
 
             boolean pardoned = punishmentInfo.isPardoned();
-            ChatColor color = (pardoned || (punishmentInfo.getExpiry().getTime() < Utils.getCurrentTimeMillis()) ? ChatColor.GREEN : ChatColor.RED);
+            Timestamp expiry = punishmentInfo.getExpiry();
+            ChatColor color = (pardoned || (expiry != null && (expiry.getTime() < Utils.getCurrentTimeMillis())) ? ChatColor.GREEN : ChatColor.RED);
 
             return new GuiItemBuilder().item(ItemBuilder.of(Material.BOOK)
                     .displayName(color + "Reason: " + ChatColor.GRAY + punishmentInfo.getReason())
                     .addToLore(
                             color + "Punisher: " + ChatColor.GRAY + displaySender,
                             color + "Date: " + ChatColor.GRAY + Utils.formatTimestamp(punishmentInfo.getPunishDate()),
-                            color + "Expiry: " + ChatColor.GRAY + Utils.formatTimestamp(punishmentInfo.getExpiry()),
+                            color + "Expiry: " + ChatColor.GRAY + (expiry == null ? "Permanent" : Utils.formatTimestamp(expiry)),
                             color + "Pardoned: " + ChatColor.GRAY + pardoned,
                             (pardoned ? color + "Pardon Reason: " + ChatColor.GRAY + punishmentInfo.getPardonReason() : "")
                     ).build()
