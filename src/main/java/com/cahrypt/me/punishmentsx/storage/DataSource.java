@@ -14,9 +14,9 @@ public class DataSource {
     private static final HikariDatabase hikariDatabase;
 
     static {
-        config.setJdbcUrl(" ");
-        config.setUsername(" ");
-        config.setPassword(" ");
+        config.setJdbcUrl("jdbc:mysql://u2_kAXximItzp:RRoG.S77f.W.IKjbvJZXuoDF@db.fumaz.dev:3306/s2_PUNISHMENTS");
+        config.setUsername("u2_kAXximItzp");
+        config.setPassword("RRoG.S77f.W.IKjbvJZXuoDF");
         config.addDataSourceProperty("cachePrepStmts" , "true");
         config.addDataSourceProperty("prepStmtCacheSize" , "250");
         config.addDataSourceProperty("prepStmtCacheSqlLimit" , "2048");

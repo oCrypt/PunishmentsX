@@ -123,6 +123,7 @@ public class PunishmentManager {
 
         BLACKLIST_STORAGE(
                 "blacklistlogs",
+                12,
                 new BlacklistHandler()
         ) {
             @Override
@@ -135,12 +136,22 @@ public class PunishmentManager {
         private final Set<PunishmentHandler> handlerSet;
 
         /**
-         * Create a new SQL storage for which punishments can be stored in
+         * Create a new SQL storage for which punishments can be stored in with a default max offender ID length of 36 (UUID length)
          * @param tableName the name of the SQL table
          * @param handlers the punishment handlers sharing the storage
          */
         PunishmentStorage(@NotNull String tableName, @NotNull PunishmentHandler... handlers) {
-            this.storageStatements = new PunishmentSQLStatements(tableName);
+            this(tableName, 36, handlers);
+        }
+
+        /**
+         * Create a new SQL storage for which punishments can be stored in
+         * @param tableName the name of the SQL table
+         * @param maxOffenderIDLength the maximum storage length for the offender varchar
+         * @param handlers the punishment handlers sharing the storage
+         */
+        PunishmentStorage(@NotNull String tableName, int maxOffenderIDLength, @NotNull PunishmentHandler... handlers) {
+            this.storageStatements = new PunishmentSQLStatements(tableName, maxOffenderIDLength);
             this.handlerSet = Set.of(handlers);
 
             handlerSet.forEach(handler -> handler.registerStorage(this));

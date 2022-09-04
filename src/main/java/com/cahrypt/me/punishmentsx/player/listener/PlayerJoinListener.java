@@ -12,8 +12,6 @@ import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.UUID;
-
 public class PlayerJoinListener implements FListener {
     private static final int PRE_LOGIN_EVICTION_DELAY = 5;
 
@@ -45,8 +43,6 @@ public class PlayerJoinListener implements FListener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        UUID uuid = player.getUniqueId();
-
         StorablePlayerInfo storablePlayerInfo = playerManager.getPreLoginCache(player.getName());
 
         if (storablePlayerInfo == null) {

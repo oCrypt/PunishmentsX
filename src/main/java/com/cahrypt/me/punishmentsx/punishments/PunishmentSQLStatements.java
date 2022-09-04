@@ -2,9 +2,11 @@ package com.cahrypt.me.punishmentsx.punishments;
 
 public class PunishmentSQLStatements {
     private final String punishmentTableName;
+    private final int maxOffenderIDLength;
 
-    public PunishmentSQLStatements(String punishmentTableName) {
+    public PunishmentSQLStatements(String punishmentTableName, int maxOffenderIDLength) {
         this.punishmentTableName = punishmentTableName;
+        this.maxOffenderIDLength = maxOffenderIDLength;
     }
 
     /**
@@ -13,15 +15,15 @@ public class PunishmentSQLStatements {
      */
     public String getPunishmentTableQuery() {
         return "CREATE TABLE IF NOT EXISTS " + punishmentTableName + " (" +
-                "offenderID VARCHAR NOT NULL, " +
-                "punisherID VARCHAR NOT NULL, " +
+                "offenderID VARCHAR("+ maxOffenderIDLength + ") NOT NULL, " +
+                "punisherID VARCHAR(36) NOT NULL, " +
                 "reason VARCHAR(50) NOT NULL, " +
                 "punishDate TIMESTAMP NOT NULL, " +
-                "expirationDate TIMESTAMP DEFAULT NULL, " +
-                "pardoned BOOL NOT NULL DEFAULT 0, " +
-                "pardoner VARCHAR DEFAULT NULL, " +
+                "expirationDate TIMESTAMP NULL DEFAULT NULL, " +
+                "pardoned BOOL DEFAULT FALSE, " +
+                "pardoner VARCHAR(36) DEFAULT NULL, " +
                 "pardonReason VARCHAR(50) DEFAULT NULL, " +
-                "PRIMARY KEY (offenderID, punisherID, reason, punishDate), " +
+                "PRIMARY KEY (offenderID, punisherID, reason, punishDate) " +
                 ");";
     }
 

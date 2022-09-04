@@ -23,8 +23,6 @@ public final class Utils {
 
     // TIMES
 
-    public static final TimeZone TIME_ZONE = TimeZone.getTimeZone("EST");
-
     public static final long SEC_MILLIS = 1000L;
     public static final long MIN_MILLIS = 1000L*60;
     public static final long HOUR_MILLIS = 1000L*60*60;
@@ -33,12 +31,14 @@ public final class Utils {
     public static final long MONTH_MILLIS = 1000L*60*60*24*7*4;
     public static final long YEAR_MILLIS = 1000L*60*60*24*7*4*12;
 
+    public static final long TIME_ZONE_OFFSET = TimeZone.getTimeZone("EST").getRawOffset() - HOUR_MILLIS;
+
     /**
      * Obtains the correct time in milliseconds for my timezone since I'm not testing locally lmao
      * @return the accurate time zone
      */
     public static long getCurrentTimeMillis() {
-        return System.currentTimeMillis() + TIME_ZONE.getRawOffset() - HOUR_MILLIS;
+        return System.currentTimeMillis() + TIME_ZONE_OFFSET;
     }
 
     /**
